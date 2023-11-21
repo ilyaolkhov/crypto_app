@@ -26,7 +26,7 @@ class CryptoCoinTitile extends StatelessWidget {
         style: theme.textTheme.labelSmall,
       ),
       onTap: (){
-        Navigator.of(context).pushNamed('coin', arguments: coin);
+        Navigator.of(context).pushNamed('coin',arguments: coin);
       },
     );
   }

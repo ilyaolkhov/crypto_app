@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:crypto_app/repositories/crypto_coins/abstract_repository_coins.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../../repositories/crypto_coins/crypto_coin.dart';
 part 'events_coins_list.dart';
@@ -14,6 +15,9 @@ class CoinsListBloc extends Bloc<CoinsListEvent, CoinsListState> {
         emit(CoinsListLoaded(coinsList: coinsList));
       } catch (e) {
         emit(CoinsListLoadingError(exception: e));
+      }
+      finally{
+        event.completer?.complete();
       }
 
     });

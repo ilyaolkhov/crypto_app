@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crypto_app/feature/crypto_list/block/coins_block.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,27 +35,37 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           centerTitle: true,
         ),
-        body: BlocBuilder<CoinsListBloc, CoinsListState>(
-            bloc: _cryptoListBlock,
-            builder: (context, state) {
-              if (state is CoinsListLoaded) {
-                return ListView.separated(
-                    separatorBuilder: (context, i) => Divider(
-                          height: 3,
-                          color: theme.dividerColor,
-                        ),
-                    itemCount: state.coinsList.length,
-                    itemBuilder: (context, i) {
-                      final coin = state.coinsList![i];
-                      return CryptoCoinTitile(coin: coin);
-                    });
+        body: RefreshIndicator(
+          color: Colors.yellow,
+          backgroundColor: Color.fromARGB(255, 52, 52, 52),
+
+          onRefresh: ()async{
+            final completer = Completer();
+            _cryptoListBlock.add(LoadCoinsList(completer: completer));
+            return completer.future;
+          },
+          child: BlocBuilder<CoinsListBloc, CoinsListState>(
+              bloc: _cryptoListBlock,
+              builder: (context, state) {
+                if (state is CoinsListLoaded) {
+                  return ListView.separated(
+                      separatorBuilder: (context, i) => Divider(
+                            height: 3,
+                            color: theme.dividerColor,
+                          ),
+                      itemCount: state.coinsList.length,
+                      itemBuilder: (context, i) {
+                        final coin = state.coinsList![i];
+                        return CryptoCoinTitile(coin: coin);
+                      });
+                }
+                if (state is CoinsListLoadingError) {
+                  return Center(child: Text('Error'));
+                }
+                return Center(child: CircularProgressIndicator());
               }
-              if (state is CoinsListLoadingError) {
-                return Center(child: Text('Error'));
-              }
-              return Center(child: CircularProgressIndicator());
-            }
-            )
+              ),
+        )
         //
         );
   }
